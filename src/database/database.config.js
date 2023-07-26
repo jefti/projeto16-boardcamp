@@ -1,20 +1,14 @@
+import pg from "pg";
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-//Conectar ao banco de dados
+const {Pool} = pg;
 
-/*
-
-const connection = new Pool({
+const configDatabase = {
   connectionString: process.env.DATABASE_URL,
-});
+};
 
-*/
-try{
-    console.log('Banco de dados conectado!');
-}catch{
-    console.log(err.message);
-}
+if (process.env.NODE_ENV == "production") configDatabase.sll=true;
 
-export const db = 'mongoCLient.db()';
+export const db = new Pool(configDatabase);
