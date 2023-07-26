@@ -6,7 +6,7 @@ export async function validateGames(req,res,next){
         const validation = gamesSchema.validate(req.body,{abortEarly: false});
         if(validation.error){
             const errors = validation.error.details.map((d)=>d.message);
-            return res.send(errors).status(422);
+            return res.send(errors).status(400);
         }
         next();
     }catch(err){

@@ -12,9 +12,14 @@ export async function findAllGames(req, res) {
 export async function registerGames(req,res){
     const {name, image, stockTotal, pricePerDay} = req.body;
     try{
-        await db.query(
-          `
-          INSERT INTO games (name, image, "stockTotal", "pricePerDay" )
+      const teste = await db.query(`SELECT * FROM games WHERE name = $1`, [name]); 
+      if(teste.rows.length !== 0){
+        return res.status(409).send('jogo já cadastrado');
+      }
+      
+      
+      await db.query(
+          `INSERT INTO games (name, image, "stockTotal", "pricePerDay" )
             VALUES ($1, $2, $3, $4)
             `,
             [name, image, stockTotal, pricePerDay]);
