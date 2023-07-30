@@ -32,6 +32,7 @@ export async function getRentals(req,res){
         JOIN games game ON r."gameId" = game.id;`);
         
         const resposta = rentals.rows.map((el)=>{
+            
             const dateObj1 = new Date(el.rentDate);
             const rentDateFormatado = dateObj1.toISOString().split('T')[0];
             let dateObj2 = null;
@@ -40,7 +41,12 @@ export async function getRentals(req,res){
                 dateObj2 = new Date(el.returnDate);
                 returnDateFormatado = dateObj2.toISOString().split('T')[0];
             };
-            return {...el, rentDate:rentDateFormatado, returnDate:returnDateFormatado};
+            const obj = {...el, rentDate:rentDateFormatado, returnDate:returnDateFormatado, customer:{id:el.customerId, name: el.customerName}, game:{id:el.gameId, name:el.gameName}};
+            delete obj.customerId;
+            delete obj.customerName;
+            delete obj.gameId;
+            delete obj.gameName;
+            return obj;
         });
         
         return res.send(resposta);
