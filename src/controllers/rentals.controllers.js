@@ -42,9 +42,7 @@ export async function getRentals(req,res){
                 returnDateFormatado = dateObj2.toISOString().split('T')[0];
             };
             const obj = {...el, rentDate:rentDateFormatado, returnDate:returnDateFormatado, customer:{id:el.customerId, name: el.customerName}, game:{id:el.gameId, name:el.gameName}};
-            delete obj.customerId;
             delete obj.customerName;
-            delete obj.gameId;
             delete obj.gameName;
             return obj;
         });
