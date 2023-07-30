@@ -26,10 +26,35 @@ export async function RegisterRental(req,res){
 
 export async function getRentals(req,res){
     try{
-        const rentals = await db.query(`SELECT r.*,customer.id AS "customerId" ,customer.name AS "customerName",game.id AS "gameId", game.name AS "gameName"
-        FROM rentals r
-        JOIN customers customer ON r."customerId" = customer.id
-        JOIN games game ON r."gameId" = game.id;`);
+        let customerId = '';
+        let gameId = '';
+        const values = [];
+        if(req.query.customerId){
+            customerId = req.query.customerId;
+            values.push(customerId);
+            const customer = await db.query(`SELECT * FROM customers WHERE id = $1;`,[customerId]);
+            if(customer.rowCount === 0) return res.status(404).send('Não encontrado cliente com id informado');
+        }
+        if(req.query.gameId){
+            gameId = req.query.gameId;
+            values.push(gameId);
+            const game = await db.query(`SELECT * FROM games WHERE id = $1;`,[gameId]);
+            if(game.rowCount === 0) return res.status(404).send('Não encontrado jogo com id informado');
+        }
+
+
+        const query = `
+          SELECT r.*, customer.id AS "customerId", customer.name AS "customerName", game.id AS "gameId", game.name AS "gameName"
+          FROM rentals r
+          JOIN customers customer ON r."customerId" = customer.id
+          JOIN games game ON r."gameId" = game.id
+          ${(customerId || gameId)? ' WHERE ':''}
+          ${customerId ? ' customer.id = $1' : ''}
+          ${customerId && gameId ? 'AND game.id = $2' : ''}
+          ${gameId && !customerId? 'game.id = $1' : ''}
+        `;
+        
+        const rentals = await db.query(query, values);
         
         const resposta = rentals.rows.map((el)=>{
             
