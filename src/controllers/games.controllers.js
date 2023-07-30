@@ -3,9 +3,9 @@ import { db } from "../database/database.config.js";
 export async function findAllGames(req, res) {
     try {
       const games = await db.query("SELECT * FROM games;");
-      res.send(games.rows);
+      return res.send(games.rows);
     } catch (err) {
-      res.status(500).send(err.message);
+      return res.status(500).send(err.message);
     }
 }
 
